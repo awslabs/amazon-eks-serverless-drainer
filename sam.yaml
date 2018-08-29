@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  eks-lambda-drainer
+  
+  SAM Template for eks-lambda-drainer
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  MyFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./main.zip
+      Handler: main
+      Runtime: go1.x
+      Policies:
+        - AWSLambdaBasicExecutionRole # Managed Policy
+        - Version: '2012-10-17' # Policy Document
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:DescribeInstances
+                - eks:DescribeCluster
+              Resource: '*'
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          CLUSTER_NAME: myeks
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: String
+      EventPattern: {
+        "source": [
+          "aws.ec2"
+        ],
+        "detail-type": [
+          "EC2 Spot Instance Interruption Warning"
+        ]
+      }
+      Name: SpotTermination
+      State: ENABLED
+      Targets:
+        - 
+          Arn: !GetAtt MyFunction.Arn
+          Id:  !Sub "${AWS::StackName}-eks-lambda-drainer"
+
+Outputs:
+  MyFunction:
+    Description: "Lambda function Arn"
+    Value: !GetAtt MyFunction.Arn
+
+  MyFunctionIamRole:
+    Description: "Lambda function IAM role Arn"
+    Value: !GetAtt MyFunctionRole.Arn
