@@ -62,4 +62,5 @@ Configure your Amazon EKS cluster name in the Lambda environment variables.
 
 - [ ] package the Lambda function in [AWS SAM](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html) format
 - [ ] publish to [AWS Serverless Applicaton Repository](https://aws.amazon.com/tw/serverless/serverlessrepo/)
+- [ ] ASG/LifeCycle integration [#2](https://github.com/pahud/eks-lambda-drainer/issues/2)
 - [ ] add more samples
