@@ -23,7 +23,7 @@ Resources:
           Statement:
             - Effect: Allow
               Action:
-                - ec2:DescribeInstance
+                - ec2:DescribeInstances
                 - ec2:DescribeTags
                 - eks:DescribeCluster
               Resource: '*'
@@ -41,7 +41,7 @@ Resources:
   EventRule:
     Type: AWS::Events::Rule
     Properties: 
-      Description: String
+      Description: "Rule for EC2 Spot Termination handling"
       EventPattern: {
         "source": [
           "aws.ec2"
@@ -50,7 +50,7 @@ Resources:
           "EC2 Spot Instance Interruption Warning"
         ]
       }
-      Name: SpotTermination
+      Name: !Sub "SpotTermination-${AWS::StackName}"
       State: ENABLED
       Targets:
         - 
