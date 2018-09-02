@@ -45,9 +45,7 @@ You can get the `rolearn` from the output tab of cloudformation console.
 
 
 
-![](images/02.png)
-
-
+try `kubectl describe` this node and see the `Taints` on it
 
 ![](images/03.png)
 
