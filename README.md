@@ -11,9 +11,29 @@
 Install [SAM CLI](https://github.com/awslabs/aws-sam-cli) and [go dep](https://golang.github.io/dep/docs/installation.html)
 
 1. execute `dep ensure -v`to make sure all packages required can be downloaded to local
+
 2. just type `make` to buiild the `main.zip` for Lambda
+
 3. `sam package` to package the lambda bundle
+
+   ```
+   sam package \
+     --template-file sam.yaml \
+     --output-template-file sam-packaged.yaml \
+     --s3-bucket pahud-tmp
+   ```
+
+   (change **pahud-tmp** to your temporary S3 bucket name)
+
 4. `sam deploy` to deploy to AWS Lambda 
+
+   ```
+   sam deploy \
+   > --template-file sam-packaged.yaml \
+   > --stack-name eks-lambda-drainer \
+   > --capabilities CAPABILITY_IAM
+   ```
+
 
 # Add Lambda Role into ConfigMap
 
