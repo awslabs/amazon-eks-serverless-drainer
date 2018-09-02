@@ -85,6 +85,10 @@ func ec2Info(ec2svc *ec2.EC2, instanceID string) (nodeName string, err error) {
 	}
 	input := ec2.DescribeInstancesInput{Filters: filters}
 	result, err := ec2svc.DescribeInstances(&input)
+	if err != nil {
+		log.Errorf("DescribeInstances got error: %v", err)
+		return "", err
+	}
 	// log.Info(aws.String(result.Reservations[0].Instances[0].PrivateDnsName))
 	log.Info(*result)
 	if len(result.Reservations) < 1 {
@@ -141,7 +145,7 @@ func getClusterNameFromTags(ec2svc *ec2.EC2, instanceID string) (string, error) 
 	input := ec2.DescribeTagsInput{Filters: filters}
 	result, err := ec2svc.DescribeTags(&input)
 	if err != nil {
-		log.Errorf("got err:%v", err)
+		log.Errorf("DescribeTags got err:%v", err)
 		return clusterName, err
 	}
 	for _, k := range result.Tags {
@@ -164,11 +168,11 @@ func taintNode(id string) {
 	ec2svc := initEc2svc()
 	nodeName, err := ec2Info(ec2svc, id)
 	if err != nil {
-		log.Errorf("got error: %v", err)
+		log.Errorf("ec2Info got error: %v", err)
 	}
 	clusterName, err = getClusterNameFromTags(ec2svc, id)
 	if err != nil {
-		log.Errorf("got error: %v", err)
+		log.Errorf("getClusterNameFromTags got error: %v", err)
 	}
 	h := eksutils.EksHandler{}
 	h.ClusterName = clusterName
