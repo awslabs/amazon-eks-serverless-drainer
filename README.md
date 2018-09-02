@@ -8,9 +8,12 @@
 
 # Installation
 
-Install and deploy **eks-lambda-drainer** with **AWS Serverless Application Repository**(TBD).
+Install [SAM CLI](https://github.com/awslabs/aws-sam-cli) and [go dep](https://golang.github.io/dep/docs/installation.html)
 
-
+1. execute `dep ensure -v`to make sure all packages required can be downloaded to local
+2. just type `make` to buiild the `main.zip` for Lambda
+3. `sam package` to package the lambda bundle
+4. `sam deploy` to deploy to AWS Lambda 
 
 # Add Lambda Role into ConfigMap
 
@@ -33,12 +36,6 @@ You can get the `rolearn` from the output tab of cloudformation console.
 ![](images/05.png)
 
 
-
-# Configuration
-
-Configure your Amazon EKS cluster name in the Lambda environment variables.
-
-![](images/06.png)
 
 
 

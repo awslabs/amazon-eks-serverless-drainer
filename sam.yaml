@@ -23,12 +23,21 @@ Resources:
           Statement:
             - Effect: Allow
               Action:
-                - ec2:DescribeInstances
+                - ec2:DescribeInstance
+                - ec2:DescribeTags
                 - eks:DescribeCluster
               Resource: '*'
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          CLUSTER_NAME: myeks
+      # Events:
+      #   CWE:
+      #     Type: CloudWatchEvent
+      #     Properties:
+      #       Pattern:
+      #         source:
+      #           - aws.ec2
+      #         detail-type: 
+      #           - "EC2 Spot Instance Interruption Warning"
+      #Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+
   EventRule:
     Type: AWS::Events::Rule
     Properties: 
