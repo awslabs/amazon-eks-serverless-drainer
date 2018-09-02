@@ -80,3 +80,13 @@ try `kubectl describe` this node and see the `Taints` on it
 - [ ] ASG/LifeCycle integration [#2](https://github.com/pahud/eks-lambda-drainer/issues/2)
 - [ ] add more samples
 
+
+
+# FAQ
+
+
+
+### Do I need to specify the Amazon EKS cluster name in Lambda?
+
+**ANS:** No, **eks-lambda-drainer** will determine the Amazon EKS cluster name from the EC2 Tags(key=*kubernetes.io/cluster/{CLUSTER_NAME}* with value=*owned*). You just need single Lambda function to handle all spot instances from different nodegroups from different Amazon EKS clusters.
+
