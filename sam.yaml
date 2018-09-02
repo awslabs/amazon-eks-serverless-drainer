@@ -27,35 +27,16 @@ Resources:
                 - ec2:DescribeTags
                 - eks:DescribeCluster
               Resource: '*'
-      # Events:
-      #   CWE:
-      #     Type: CloudWatchEvent
-      #     Properties:
-      #       Pattern:
-      #         source:
-      #           - aws.ec2
-      #         detail-type: 
-      #           - "EC2 Spot Instance Interruption Warning"
-      #Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      Events:
+        CWE:
+          Type: CloudWatchEvent
+          Properties:
+            Pattern:
+              source:
+                - aws.ec2
+              detail-type: 
+                - "EC2 Spot Instance Interruption Warning"
 
-  EventRule:
-    Type: AWS::Events::Rule
-    Properties: 
-      Description: "Rule for EC2 Spot Termination handling"
-      EventPattern: {
-        "source": [
-          "aws.ec2"
-        ],
-        "detail-type": [
-          "EC2 Spot Instance Interruption Warning"
-        ]
-      }
-      Name: !Sub "SpotTermination-${AWS::StackName}"
-      State: ENABLED
-      Targets:
-        - 
-          Arn: !GetAtt MyFunction.Arn
-          Id:  !Sub "${AWS::StackName}-eks-lambda-drainer"
 
 Outputs:
   MyFunction:
