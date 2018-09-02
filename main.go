@@ -71,9 +71,6 @@ func initEc2svc() *ec2.EC2 {
 
 func ec2Info(ec2svc *ec2.EC2, instanceID string) (nodeName string, err error) {
 	log.Infof("looking up nodeName of %v", instanceID)
-	// currentRegion := os.Getenv("AWS_REGION")
-	// session := session.Must(session.NewSession(&aws.Config{Region: aws.String(currentRegion)}))
-	// svc := ec2.New(session)
 
 	filters := []*ec2.Filter{
 		&ec2.Filter{
@@ -100,30 +97,6 @@ func ec2Info(ec2svc *ec2.EC2, instanceID string) (nodeName string, err error) {
 	return nodeName, err
 }
 
-// func ec2Info(instanceID string) (nodeName string, err error) {
-// 	log.Infof("looking up nodeName of %v", instanceID)
-// 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String("us-west-2")}))
-// 	svc := ec2.New(session)
-// 	filters := []*ec2.Filter{
-// 		&ec2.Filter{
-// 			Name: aws.String("instance-id"),
-// 			Values: []*string{
-// 				aws.String(instanceID),
-// 			},
-// 		},
-// 	}
-// 	input := ec2.DescribeInstancesInput{Filters: filters}
-// 	result, err := svc.DescribeInstances(&input)
-// 	// log.Info(aws.String(result.Reservations[0].Instances[0].PrivateDnsName))
-// 	log.Info(*result)
-// 	if len(result.Reservations) < 1 {
-// 		return "", errors.New("instance not found")
-// 	}
-// 	nodeName = *result.Reservations[0].Instances[0].NetworkInterfaces[0].PrivateDnsName
-// 	log.Info(nodeName)
-
-// 	return nodeName, err
-// }
 
 func getClusterNameFromTags(ec2svc *ec2.EC2, instanceID string) (string, error) {
 	log.Info("start getClusterNameFromTags")
