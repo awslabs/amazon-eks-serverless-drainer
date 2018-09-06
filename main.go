@@ -12,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/pahud/eks/pkg/eksutils"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/api/core/v1"
 )
@@ -97,7 +96,6 @@ func ec2Info(ec2svc *ec2.EC2, instanceID string) (nodeName string, err error) {
 	return nodeName, err
 }
 
-
 func getClusterNameFromTags(ec2svc *ec2.EC2, instanceID string) (string, error) {
 	log.Info("start getClusterNameFromTags")
 	var clusterName string
@@ -147,10 +145,9 @@ func taintNode(id string) {
 	if err != nil {
 		log.Errorf("getClusterNameFromTags got error: %v", err)
 	}
-	h := eksutils.EksHandler{}
-	h.ClusterName = clusterName
+
+	h := NewEksHandler(clusterName)
 	log.Infof("clusterName=%v", h.ClusterName)
-	h.GetClientSet()
 	// h.GetNodes()
 	// h.GetPods()
 	// nodeName := "ip-192-168-112-39.us-west-2.compute.internal"
