@@ -146,7 +146,10 @@ func taintNode(id string) {
 		log.Errorf("getClusterNameFromTags got error: %v", err)
 	}
 
-	h := NewEksHandler(clusterName)
+	h, err := NewEksHandler(clusterName)
+	if err != nil {
+		log.Errorf("error creating new EKS handler: %v", err)
+	}
 	log.Infof("clusterName=%v", h.ClusterName)
 	// h.GetNodes()
 	// h.GetPods()

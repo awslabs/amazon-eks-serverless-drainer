@@ -5,7 +5,9 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/api/core/v1"
-	"k8s.io/kops/pkg/client/clientset_generated/clientset"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clientset "k8s.io/client-go/kubernetes"
+	controllerutils "k8s.io/kubernetes/pkg/controller"
 )
 
 type EksHandler struct {
@@ -13,20 +15,20 @@ type EksHandler struct {
 	cs          *clientset.Clientset
 }
 
-func NewEksHandler(clusterName string) error {
+func NewEksHandler(clusterName string) (*EksHandler, error) {
 	config := &eksauth.ClusterConfig{
-		ClusterName: h.ClusterName,
+		ClusterName: clusterName,
 	}
 
-	client, err := &eksauth.NewAuthClient(config)
+	cs, err := eksauth.NewAuthClient(config)
 	if err != nil {
-		return errors.Wrap(err, "Unable to get EKS authenticated client")
+		return nil, errors.Wrap(err, "Unable to get EKS authenticated client")
 	}
 
 	return &EksHandler{
 		ClusterName: clusterName,
-		cs:          client,
-	}
+		cs:          cs,
+	}, nil
 }
 
 func (h *EksHandler) GetNodes() (*v1.NodeList, error) {
