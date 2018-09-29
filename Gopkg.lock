@@ -59,6 +59,14 @@
   version = "v1.15.7"
 
 [[projects]]
+  branch = "master"
+  digest = "1:91ec52c4f0777e604d7be9440535e016fa3238ed5acf76116b4dc83ad1b29d98"
+  name = "github.com/chankh/eksutil"
+  packages = ["pkg/auth"]
+  pruneopts = "UT"
+  revision = "200c33d646561f10232a4e7cdaf7fbe8c7186fd1"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -234,14 +242,6 @@
   pruneopts = "UT"
   revision = "279bed98673dd5bef374d3b6e4b09e2af76183bf"
   version = "v1.0.0-rc1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:26fa687762d698f02b19affccd1c3af5aaf507a7dc86631b21dda2e74faf5579"
-  name = "github.com/pahud/eks"
-  packages = ["pkg/eksutils"]
-  pruneopts = "UT"
-  revision = "b9763485a2f34e871951ba4203d499fb81dc8e26"
 
 [[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
@@ -597,9 +597,13 @@
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/ec2",
-    "github.com/pahud/eks/pkg/eksutils",
+    "github.com/chankh/eksutil/pkg/auth",
+    "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "k8s.io/api/core/v1",
+    "k8s.io/apimachinery/pkg/apis/meta/v1",
+    "k8s.io/client-go/kubernetes",
+    "k8s.io/kubernetes/pkg/controller",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
