@@ -26,9 +26,10 @@ Resources:
                 - ec2:DescribeInstances
                 - ec2:DescribeTags
                 - eks:DescribeCluster
+                - autoscaling:CompleteLifecycleAction
               Resource: '*'
       Events:
-        CWE:
+        CWE1:
           Type: CloudWatchEvent
           Properties:
             Pattern:
@@ -36,6 +37,14 @@ Resources:
                 - aws.ec2
               detail-type: 
                 - "EC2 Spot Instance Interruption Warning"
+        CWE2:
+          Type: CloudWatchEvent
+          Properties:
+            Pattern:
+              source:
+                - aws.autoscaling
+              detail-type: 
+                -  "EC2 Instance-terminate Lifecycle Action"
 
 
 Outputs:
