@@ -57,6 +57,11 @@ You can get the `rolearn` from the output tab of cloudformation console.
 
 
 
+# Autoscaling Group LifecycleHook Support
+
+By creating your nodegroup with this cloudformation template, your autoscaling group will have a LifecycleHook to a specific SNS topic and eventually invoke **eks-lambda-drainer** to drain the pods from the terminating node. Your node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), **eks-lambda-drainer** will put **CompleteLifecycleAction** back to the hook and Autoscaling group then move the **Terminaing:Proceed** phase to execute the real termination. The Pods in the terminating node will be rescheduled just in a few seconds.
+
+
 
 
 # In Actions
@@ -77,7 +82,7 @@ try `kubectl describe` this node and see the `Taints` on it
 
 - [x] package the Lambda function in [AWS SAM](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html) format
 - [ ] publish to [AWS Serverless Applicaton Repository](https://aws.amazon.com/tw/serverless/serverlessrepo/)
-- [ ] ASG/LifeCycle integration [#2](https://github.com/pahud/eks-lambda-drainer/issues/2)
+- [x] ASG/LifeCycle integration [#2](https://github.com/pahud/eks-lambda-drainer/issues/2)
 - [ ] add more samples
 
 
