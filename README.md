@@ -59,7 +59,7 @@ You can get the `rolearn` from the output tab of cloudformation console.
 
 # Autoscaling Group LifecycleHook Support
 
-By creating your nodegroup with this cloudformation template, your autoscaling group will have a LifecycleHook to a specific SNS topic and eventually invoke **eks-lambda-drainer** to drain the pods from the terminating node. Your node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), **eks-lambda-drainer** will put **CompleteLifecycleAction** back to the hook and Autoscaling group then move the **Terminaing:Proceed** phase to execute the real termination. The Pods in the terminating node will be rescheduled just in a few seconds.
+By creating your nodegroup with this cloudformation template, your autoscaling group will have a LifecycleHook to a specific SNS topic and eventually invoke **eks-lambda-drainer** to drain the pods from the terminating node. Your node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), **eks-lambda-drainer** will put **CompleteLifecycleAction** back to the hook and Autoscaling group therefore move on to the **Terminaing:Proceed** phase to execute the real termination process. The Pods in the terminating node will be rescheduled to other node(s) just in a few seconds. Your service will have almost zero impact.
 
 
 
