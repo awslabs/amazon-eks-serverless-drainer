@@ -2,3 +2,4 @@ main
 main.zip
 vendor/
 sam-packaged.yaml
+.DS_Store

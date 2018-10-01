@@ -10,11 +10,13 @@ import (
 	controllerutils "k8s.io/kubernetes/pkg/controller"
 )
 
+// EksHandler ...
 type EksHandler struct {
 	ClusterName string
 	cs          *clientset.Clientset
 }
 
+// NewEksHandler ...
 func NewEksHandler(clusterName string) (*EksHandler, error) {
 	config := &eksauth.ClusterConfig{
 		ClusterName: clusterName,
@@ -31,6 +33,7 @@ func NewEksHandler(clusterName string) (*EksHandler, error) {
 	}, nil
 }
 
+// GetNodes ...
 func (h *EksHandler) GetNodes() (*v1.NodeList, error) {
 	// Call Kubernetes API here
 	clientset := h.cs
@@ -49,6 +52,7 @@ func (h *EksHandler) GetNodes() (*v1.NodeList, error) {
 	return nodes, err
 }
 
+// GetPods ...
 func (h *EksHandler) GetPods() (*v1.PodList, error) {
 	// Call Kubernetes API here
 	clientset := h.cs
@@ -67,6 +71,7 @@ func (h *EksHandler) GetPods() (*v1.PodList, error) {
 	return pods, err
 }
 
+// TaintNode ...
 func (h *EksHandler) TaintNode(t *v1.Taint, nodeName string) error {
 	log.Infof("Tainting on node %s", nodeName)
 	return controllerutils.AddOrUpdateTaintOnNode(h.cs, nodeName, t)

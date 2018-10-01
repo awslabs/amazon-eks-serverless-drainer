@@ -83,8 +83,8 @@ func handler(cweEvent events.CloudWatchEvent) (string, error) {
     }
 }`
 	testJSONRawByte := json.RawMessage(testJSON)
-	
-	if inLambda(){
+
+	if inLambda() {
 		inputEvent = cweEvent
 	} else {
 		log.Info("not in lambda")
@@ -125,7 +125,7 @@ func handler(cweEvent events.CloudWatchEvent) (string, error) {
 	// outputJSON, err := json.Marshal(inputEvent)
 	// log.Infof("outputJSON=%v", string(outputJSON))
 	// taintNode("i-0c3fd90fa072e2e47")
-	
+
 	taintNode(instanceID)
 	log.Info("checking if it's asgnode")
 	if lch.init {
@@ -197,7 +197,7 @@ func ec2Info(ec2svc *ec2.EC2, instanceID string) (nodeName string, err error) {
 	log.Infof("looking up nodeName of %v", instanceID)
 
 	filters := []*ec2.Filter{
-		&ec2.Filter{
+		{
 			Name: aws.String("instance-id"),
 			Values: []*string{
 				aws.String(instanceID),
@@ -228,13 +228,13 @@ func getClusterNameFromTags(ec2svc *ec2.EC2, instanceID string) (string, error) 
 	log.Info("start getClusterNameFromTags")
 	var clusterName string
 	filters := []*ec2.Filter{
-		&ec2.Filter{
+		{
 			Name: aws.String("resource-id"),
 			Values: []*string{
 				aws.String(instanceID),
 			},
 		},
-		&ec2.Filter{
+		{
 			Name: aws.String("value"),
 			Values: []*string{
 				aws.String("owned"),
