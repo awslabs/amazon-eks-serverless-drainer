@@ -31,13 +31,16 @@ GOPATH  ?= $(HOME)/go
 GOOS    ?= linux
 GOOSDEV	?= darwin
 GOARCH  ?= amd64
+# modify this as your own S3 temp bucket. Make sure your locak IAM user have read/write access
+S3TMPBUCKET	?= pahud-tmp
+STACKNAME	?= eks-lambda-drainer
 
 WORKDIR = $(CURDIR:$(GOPATH)%=/go%)
 ifeq ($(WORKDIR),$(CURDIR))
 	WORKDIR = /tmp
 endif
 
-all: dep build pack 
+all: dep build pack package
 
 dep:
 	@echo "Checking dependencies..."
@@ -58,5 +61,15 @@ pack:
 clean:
 	@echo "Cleaning up..."
 	@rm -rf $(HANDLER) $(PACKAGE).zip
+
+package:
+	@echo "sam packaging..."
+	@aws cloudformation package --template-file sam.yaml --s3-bucket $(S3TMPBUCKET) --output-template-file sam-packaged.yaml
+
+deploy:
+	@echo "sam deploying..."
+	@aws cloudformation deploy --template-file sam-packaged.yaml --stack-name $(STACKNAME) --capabilities CAPABILITY_IAM
+
+world: all deploy
 
 .PHONY: all dep build pack clean
