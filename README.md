@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/pahud/eks-lambda-drainer.svg?branch=master)](https://travis-ci.org/pahud/eks-lambda-drainer)
 
 # eks-lambda-drainer
 
