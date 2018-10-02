@@ -1,0 +1,27 @@
+# This is how to tell Travis to use the fast container-based test
+# runner instead of the slow VM-based one.
+sudo: false
+
+language: go
+
+# Only the last two Go releases are supported by the Go team with security updates.
+# Any older versions are considered deprecated.
+go:
+  - "1.10.x"
+  - "1.9.x"
+
+# Only clone the most recent commit.
+git:
+  depth: 1
+
+# Install needed tools
+#install:
+
+install:
+  - go get -u github.com/golang/dep/...
+  - dep ensure
+#  - go get -u golang.org/x/lint/golint
+
+# Tests to run
+script:
+  - make build
