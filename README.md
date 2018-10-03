@@ -13,8 +13,6 @@
 
 2. run `dep ensure -v` to install required go packages - you might need to install [go dep](https://golang.github.io/dep/docs/installation.html) first.
 
-Install [SAM CLI](https://github.com/awslabs/aws-sam-cli) and 
-
 3. edit `Makefile` and update **S3TMPBUCKET** variable:
 
 modify this to your private S3 bucket you have read/write access to
