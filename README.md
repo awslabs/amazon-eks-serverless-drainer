@@ -4,13 +4,13 @@
 
 ## Implementations
 
-- `golang` implementation(golang branch)
+- `golang` implementation([branch](https://github.com/pahud/eks-lambda-drainer/tree/golang))
 - `bash` implementation(current master branch)
 
-Previously this project has a native `golang` implementation with `go-client`(see `golang` [branch](https://github.com/pahud/eks-lambda-drainer/tree/golang)).
-However, as AWS announced AWS Lambda layer and Lambda custom runtime and thanks to `pahud/lambda-layer-kubectl`([link](https://github.com/pahud/lambda-layer-kubectl)) project,
-it's very easy to implement this with a few lines of bash script in Lambda([tweet](https://twitter.com/pahudnet/status/1095369690556162049)) whilst the code size being reduced from `11MB` to just `2.4KB`.
-So the current implementation would be simply `bash`. We believe this will eliminate the complexity to develop similar projects in the future.
+Previously this project has a native `golang` implementation with `client-go`(see `golang` [branch](https://github.com/pahud/eks-lambda-drainer/tree/golang)).
+However, as AWS [announced](https://amzn.to/2SUlcv3) `Lambda layer` and `Lambda custom runtime`, thanks to `pahud/lambda-layer-kubectl`([link](https://github.com/pahud/lambda-layer-kubectl)) project,
+it's very easy to implement this with a few lines of bash script in Lambda([tweet](https://twitter.com/pahudnet/status/1095369690556162049)) whilst the code size could be reduced from `11MB` to just `2.4KB`.
+So we will stick to `bash` implementation in this branch. We believe this will eliminate the complexity to help people develop similar projects in the future.
 
 
 # Prepare your Layer
