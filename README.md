@@ -20,6 +20,16 @@ Copy the layer ARN(e.g. `arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:l
 
 # Edit the sam.yaml
 
+Set the value of `Layers` to the layer arn in the previous step.
+
+```
+      Layers:
+        - !Sub "arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:layer-eks-kubectl-layer-stack:2"
+
+```
+
+# update Makefile
+
 edit `Makefile` and update **S3BUCKET** variable:
 
 modify this to your private S3 bucket you have read/write access to
