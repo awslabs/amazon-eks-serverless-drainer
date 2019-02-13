@@ -11,10 +11,10 @@ Globals:
     Timeout: 30
 
 Resources:
-  MyFunction:
+  Func:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./main.zip
+      CodeUri: ./func.d
       Handler: main
       Runtime: go1.x
       Policies:
@@ -48,10 +48,10 @@ Resources:
 
 
 Outputs:
-  MyFunction:
+  Func:
     Description: "Lambda function Arn"
-    Value: !GetAtt MyFunction.Arn
+    Value: !GetAtt Func.Arn
 
-  MyFunctionIamRole:
+  FuncIamRole:
     Description: "Lambda function IAM role Arn"
-    Value: !GetAtt MyFunctionRole.Arn
+    Value: !GetAtt FuncRole.Arn
