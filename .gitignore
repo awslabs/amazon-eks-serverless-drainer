@@ -3,3 +3,5 @@ main.zip
 vendor/
 sam-packaged.yaml
 .DS_Store
+func.d/
+packaged.yaml
