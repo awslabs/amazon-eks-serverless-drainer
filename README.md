@@ -11,33 +11,66 @@
 
 1. `git clone` to check out the repository to local and `cd` to the directory
 
-2. run `dep ensure -v` to install required go packages - you might need to install [go dep](https://golang.github.io/dep/docs/installation.html) first.
-
-3. edit `Makefile` and update **S3TMPBUCKET** variable:
+2. edit `Makefile` and update **S3BUCKET** variable:
 
 modify this to your private S3 bucket you have read/write access to
 ```
-S3TMPBUCKET ?= pahud-temp
+S3BUCKET ?= pahud-temp-ap-northeast-1
 ```
 
-4. type `make world` to build, pack, package and deploy to Lambda
+set the AWS region you are deploying to
 ```
-pahud:~/go/src/eks-lambda-drainer (master) $ make world
-Checking dependencies...
-Building...
-Packing binary...
-updating: main (deflated 73%)
-sam packaging...
-Uploading to a33bb95c227378e21102db1274f5dffd  8423458 / 8423458.0  (100.00%)
-Successfully packaged artifacts and wrote output template to file sam-packaged.yaml.
+LAMBDA_REGION ?= ap-northeast-1
+```
+
+
+4. type `make build` to build the binary and store in `./func.d/main`
+```
+$ make build
+
+```
+(This may take 1-2 minutes. Be patient.)
+
+```
+$ ls -alR ./func.d/                                                                                                                                
+./func.d/:
+total 49104
+drwxr-xr-x 2 root     root         4096 Feb 13 05:55 .
+drwxrwxr-x 6 ec2-user ec2-user     4096 Feb 13 05:55 ..
+-rwxr-xr-x 1 root     root     50270699 Feb 13 05:55 main
+```
+
+
+4. package and deploy with `SAM`
+```
+$ make sam-package sam-deploy
+```
+(`SAM` will deplly a cloudformation stack for you in your `{LAMBDA_REGION}` and register cloudwatch events as the Lambda source event)
+```
+Uploading to 032ea7f22f8fedab0d016ed22f2bdea4  11594869 / 11594869.0  (100.00%)
+Successfully packaged artifacts and wrote output template to file packaged.yaml.
 Execute the following command to deploy the packaged template
-aws cloudformation deploy --template-file /home/ec2-user/go/src/eks-lambda-drainer/sam-packaged.yaml --stack-name <YOUR STACK NAME>
-sam deploying...
+aws cloudformation deploy --template-file /home/samcli/workdir/packaged.yaml --stack-name <YOUR STACK NAME>
 
 Waiting for changeset to be created..
 Waiting for stack create/update to complete
 Successfully created/updated stack - eks-lambda-drainer
+# print the cloudformation stack outputs
+aws --region ap-northeast-1 cloudformation describe-stacks --stack-name "eks-lambda-drainer" --query 'Stacks[0].Outputs'
+[
+    {
+        "Description": "Lambda function Arn", 
+        "OutputKey": "Func", 
+        "OutputValue": "arn:aws:lambda:ap-northeast-1:xxxxxxxx:function:eks-lambda-drainer-Func-1P5RHJ50KEVND"
+    }, 
+    {
+        "Description": "Lambda function IAM role Arn", 
+        "OutputKey": "FuncIamRole", 
+        "OutputValue": "arn:aws:iam::xxxxxxxx:role/eks-lambda-drainer-FuncRole-TCZVVLEG1HKD"
+    }
+]
 ```
+
 
 
 
@@ -65,7 +98,12 @@ You can get the `rolearn` from the output tab of cloudformation console.
 
 # Autoscaling Group LifecycleHook Support
 
-By creating your nodegroup with this cloudformation template, your autoscaling group will have a LifecycleHook to a specific SNS topic and eventually invoke **eks-lambda-drainer** to drain the pods from the terminating node. Your node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), **eks-lambda-drainer** will put **CompleteLifecycleAction** back to the hook and Autoscaling group therefore move on to the **Terminaing:Proceed** phase to execute the real termination process. The Pods in the terminating node will be rescheduled to other node(s) just in a few seconds. Your service will have almost zero impact.
+By creating your nodegroup with this cloudformation template, your autoscaling group will create a `LifecycleHook` and 
+`CloudWatch Event` will receive this event and eventually invoke **eks-lambda-drainer** to drain the pods from the terminating node. 
+Your node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), 
+**eks-lambda-drainer** will put **CompleteLifecycleAction** back to the hook and Autoscaling group therefore move on to the 
+**Terminaing:Proceed** phase to execute the real termination process. The Pods in the terminating node will be rescheduled to other node(s) 
+just in a few seconds. Your service will have almost zero impact.
 
 
 
@@ -81,7 +119,12 @@ try `kubectl describe` this node and see the `Taints` on it
 ![](images/03.png)
 
 
+# clean up
 
+```
+$ make sam-destroy
+```
+(this will destroy the cloudformation stack and all resources in it)
 
 
 # TODO

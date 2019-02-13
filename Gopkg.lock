@@ -15,7 +15,7 @@
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:291acfb0097d1287d689946f430bf36a0f0976f03f5f107fc74182ea119e79e8"
+  digest = "1:597077e3ab273a4efb44273d8e651e4945e25015ea0589b242b3e3a4bf44f4d3"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -49,6 +49,7 @@
     "private/protocol/rest",
     "private/protocol/restjson",
     "private/protocol/xml/xmlutil",
+    "service/autoscaling",
     "service/ec2",
     "service/eks",
     "service/sts",
@@ -595,7 +596,9 @@
     "github.com/aws/aws-lambda-go/events",
     "github.com/aws/aws-lambda-go/lambda",
     "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/awserr",
     "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/autoscaling",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/chankh/eksutil/pkg/auth",
     "github.com/pkg/errors",
