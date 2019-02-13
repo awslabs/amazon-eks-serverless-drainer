@@ -46,7 +46,7 @@ LAMBDA_REGION ?= ap-northeast-1
 # package and deploy with `SAM`
 
 ```
-$ make sam-package sam-deploy
+$ make func-prep sam-package sam-deploy
 ```
 (`SAM` will deplly a cloudformation stack for you in your `{LAMBDA_REGION}` and register cloudwatch events as the Lambda source event)
 ```
