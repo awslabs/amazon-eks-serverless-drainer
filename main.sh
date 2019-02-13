@@ -8,27 +8,6 @@ source libs.sh
 
 echo $1
 
-######## your business logic starting here #############
-# {
-#     "version": "0",
-#     "id": "1af5adec-abad-0254-e9f7-c2373a51599f",
-#     "detail-type": "EC2 Instance-terminate Lifecycle Action",
-#     "source": "aws.autoscaling",
-#     "account": "1234567890",
-#     "time": "2018-09-29T05:33:52Z",
-#     "region": "us-west-2",
-#     "resources": [
-#         "arn:aws:autoscaling:us-west-2:1234567890:autoScalingGroup:53ffecb4-9996-46c8-b635-9a679d702aef:autoScalingGroupName/eks-demo1-ng0-NodeGroup-1QEXE9U9ENSF7"
-#     ],
-#     "detail": {
-#         "LifecycleActionToken": "c53b152a-496b-4f61-bb57-bb705ba4c7c2",
-#         "AutoScalingGroupName": "eksdemo-NG-1MK781VLMHTL4-NodeGroup-2RM5IOBWP9SZ",
-#         "LifecycleHookName": "eks-demo1-ng0-ASGTerminateHook2-1IEZV1I4ZDHNS",
-#         "EC2InstanceId": "i-0ef02d64d30df8c48",
-#         "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
-#     }
-# }
-
 taintNode(){
     kubectl taint nodes "$1" SpotTerminating=true:NoExecute 
 }
