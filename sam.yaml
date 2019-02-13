@@ -56,21 +56,11 @@ Resources:
               detail-type: 
                 -  "EC2 Instance-terminate Lifecycle Action"
 
-
-
 Outputs:
-  LambdaFuncArn:
-    Description: Lambda Func ARN
+  Func:
+    Description: "Lambda function Arn"
     Value: !GetAtt Func.Arn
-    Export:
-      Name: !Sub 'LambdaFuncArn-${AWS::StackName}'
-  LambdaFuncName:
-    Description: Lambda Func Name
-    Value: !Ref Func
-    Export:
-      Name: !Sub 'LambdaFuncName-${AWS::StackName}'
-  LambdaRoleArn:
-    Description: Lambda Role ARN
+
+  FuncIamRole:
+    Description: "Lambda function IAM role Arn"
     Value: !GetAtt FuncRole.Arn
-    Export:
-      Name: !Sub 'LambdaRoleArn-${AWS::StackName}'
