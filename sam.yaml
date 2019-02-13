@@ -12,10 +12,16 @@ Transform: AWS::Serverless-2016-10-31
 Description: eks-lambda-drainer Func
 Resources:
   Func:
+<<<<<<< HEAD
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Ref FunctionName
       Description: github.com/pahud/eks-lambda-drainer
+=======
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./func.d
+>>>>>>> d3051023afc09735b20ab550b23fb8471788ab93
       Handler: main
       CodeUri: ./func.d
       Runtime: provided
@@ -57,6 +63,7 @@ Resources:
                 -  "EC2 Instance-terminate Lifecycle Action"
 
 
+<<<<<<< HEAD
 
 Outputs:
   LambdaFuncArn:
@@ -74,3 +81,13 @@ Outputs:
     Value: !GetAtt FuncRole.Arn
     Export:
       Name: !Sub 'LambdaRoleArn-${AWS::StackName}'
+=======
+Outputs:
+  Func:
+    Description: "Lambda function Arn"
+    Value: !GetAtt Func.Arn
+
+  FuncIamRole:
+    Description: "Lambda function IAM role Arn"
+    Value: !GetAtt FuncRole.Arn
+>>>>>>> d3051023afc09735b20ab550b23fb8471788ab93
