@@ -55,7 +55,6 @@ Resources:
                 - aws.autoscaling
               detail-type: 
                 -  "EC2 Instance-terminate Lifecycle Action"
-
 Outputs:
   Func:
     Description: "Lambda function Arn"
@@ -64,3 +63,4 @@ Outputs:
   FuncIamRole:
     Description: "Lambda function IAM role Arn"
     Value: !GetAtt FuncRole.Arn
+
