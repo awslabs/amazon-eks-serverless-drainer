@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/pahud/eks-lambda-drainer.svg?branch=master)](https://travis-ci.org/pahud/eks-lambda-drainer)
-[![Go Report Card](https://goreportcard.com/badge/github.com/pahud/eks-lambda-drainer)](https://goreportcard.com/report/github.com/pahud/eks-lambda-drainer)
-
 # eks-lambda-drainer
 
 **eks-lambda-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **eks-lambda-drainer**  will perform the taint-based eviction on the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
@@ -23,7 +20,7 @@ Copy the layer ARN(e.g. `arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:l
 
 # Edit the sam.yaml
 
-2. edit `Makefile` and update **S3BUCKET** variable:
+edit `Makefile` and update **S3BUCKET** variable:
 
 modify this to your private S3 bucket you have read/write access to
 ```
@@ -36,24 +33,8 @@ LAMBDA_REGION ?= ap-northeast-1
 ```
 
 
-4. type `make build` to build the binary and store in `./func.d/main`
-```
-$ make build
+# package and deploy with `SAM`
 
-```
-(This may take 1-2 minutes. Be patient.)
-
-```
-$ ls -alR ./func.d/                                                                                                                                
-./func.d/:
-total 49104
-drwxr-xr-x 2 root     root         4096 Feb 13 05:55 .
-drwxrwxr-x 6 ec2-user ec2-user     4096 Feb 13 05:55 ..
--rwxr-xr-x 1 root     root     50270699 Feb 13 05:55 main
-```
-
-
-4. package and deploy with `SAM`
 ```
 $ make sam-package sam-deploy
 ```
