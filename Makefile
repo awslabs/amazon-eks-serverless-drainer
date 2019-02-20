@@ -24,6 +24,16 @@ sam-package:
 	-e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
 	pahud/aws-sam-cli:latest sam package --template-file sam.yaml --s3-bucket $(S3BUCKET) --output-template-file packaged.yaml
 
+.PHONY: sam-publish
+sam-publish:
+	@docker run -ti \
+	-v $(PWD):/home/samcli/workdir \
+	-v $(HOME)/.aws:/home/samcli/.aws \
+	-w /home/samcli/workdir \
+	-e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
+	pahud/aws-sam-cli:latest sam publish --region $(LAMBDA_REGION) --template packaged.yaml
+
+
 .PHONY: sam-deploy	
 sam-deploy:
 	@aws --region $(LAMBDA_REGION)  cloudformation deploy \
