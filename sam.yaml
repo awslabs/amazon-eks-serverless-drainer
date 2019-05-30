@@ -10,33 +10,41 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ['eks','lambda','drain','taint', 'autoscaling', 'lifecyclehook']
     HomePageUrl: https://github.com/pahud/eks-lambda-drainer
-    SemanticVersion: 1.0.0
+    SemanticVersion: 1.0.1-beta
     SourceCodeUrl: https://github.com/pahud/eks-lambda-drainer
 
 Mappings: 
   LayerArn: 
     ap-northeast-1: 
-      kubectl: 'arn:aws:lambda:ap-northeast-1:903779448426:layer:eks-kubectl-layer:27'
+      kubectl: 'arn:aws:lambda:ap-northeast-1:903779448426:layer:eks-kubectl-layer:30'
     ap-northeast-2:
-      kubectl: 'arn:aws:lambda:ap-northeast-2:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:ap-northeast-2:903779448426:layer:eks-kubectl-layer:2'
     ap-southeast-1:
-      kubectl: 'arn:aws:lambda:ap-southeast-1:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:ap-southeast-1:903779448426:layer:eks-kubectl-layer:2'
     ap-southeast-2:
-      kubectl: 'arn:aws:lambda:ap-southeast-2:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:ap-southeast-2:903779448426:layer:eks-kubectl-layer:2'
+    ca-central-1:
+      kubectl: 'arn:aws:lambda:ca-central-1:903779448426:layer:eks-kubectl-layer:1'
     us-east-1:
-      kubectl: 'arn:aws:lambda:us-east-1:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:us-east-1:903779448426:layer:eks-kubectl-layer:2'
+    us-west-1:
+      kubectl: 'arn:aws:lambda:us-west-1:903779448426:layer:eks-kubectl-layer:1'
     us-west-2:
-      kubectl: 'arn:aws:lambda:us-west-2:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:us-west-2:903779448426:layer:eks-kubectl-layer:2'
     us-east-2:
-      kubectl: 'arn:aws:lambda:us-east-2:903779448426:layer:eks-kubectl-layer:2'
+      kubectl: 'arn:aws:lambda:us-east-2:903779448426:layer:eks-kubectl-layer:3'
     eu-central-1:
-      kubectl: 'arn:aws:lambda:eu-central-1:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:eu-central-1:903779448426:layer:eks-kubectl-layer:2'
     eu-west-1:
-      kubectl: 'arn:aws:lambda:eu-west-1:903779448426:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws:lambda:eu-west-1:903779448426:layer:eks-kubectl-layer:2'
+    eu-north-1:
+      kubectl: 'arn:aws:lambda:eu-north-1:903779448426:layer:eks-kubectl-layer:1'
+    sa-east-1:
+      kubectl: 'arn:aws:lambda:sa-east-1:903779448426:layer:eks-kubectl-layer:1'
     cn-north-1:
-      kubectl: 'arn:aws-cn:lambda:cn-north-1:937788672844:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws-cn:lambda:cn-north-1:937788672844:layer:eks-kubectl-layer:2'
     cn-northwest-1:
-      kubectl: 'arn:aws-cn:lambda:cn-northwest-1:937788672844:layer:eks-kubectl-layer:1'
+      kubectl: 'arn:aws-cn:lambda:cn-northwest-1:937788672844:layer:eks-kubectl-layer:2'
 
 Parameters:
   ClusterName:
@@ -45,6 +53,13 @@ Parameters:
   FunctionName:
     Type: String
     Default: defaultFunc
+  FunctionRoleArn:
+    Type: String
+    Default: ""
+    
+Conditions:
+  UseExistingLambdaFuncRole: !Not [!Equals [ !Ref FunctionRoleArn, "" ]]
+  NotUseExistingLambdaFuncRole: !Equals [ !Ref FunctionRoleArn, "" ]
 
 Transform: AWS::Serverless-2016-10-31
 Description: eks-lambda-drainer Func
@@ -67,18 +82,11 @@ Resources:
       Environment:
         Variables:
           cluster_name: !Ref ClusterName
-      Policies:
-        - AWSLambdaBasicExecutionRole # Managed Policy
-        - Version: '2012-10-17' # Policy Document
-          Statement:
-            - Effect: Allow
-              Action:
-                - ec2:DescribeInstances
-                - ec2:DescribeTags
-                - eks:DescribeCluster
-                - autoscaling:CompleteLifecycleAction
-              Resource: '*'
-      #Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LambdaEKSAdminRole"
+      Role: 
+        !If
+          - UseExistingLambdaFuncRole
+          - !Ref FunctionRoleArn
+          - !GetAtt MyLambdaRole.Arn
       Timeout: 50
       Events:
         CWE1:
@@ -97,12 +105,105 @@ Resources:
                 - aws.autoscaling
               detail-type: 
                 -  "EC2 Instance-terminate Lifecycle Action"
+                
+  MyLambdaRole:
+    Condition: NotUseExistingLambdaFuncRole
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com" 
+            Action: 
+              - "sts:AssumeRole"
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      # MaxSessionDuration: Integer
+      Path: /
+      # PermissionsBoundary: String
+      Policies:
+        # - AWSLambdaBasicExecutionRole # Managed Policy
+        -
+          PolicyName: Root
+          PolicyDocument:
+            Version: '2012-10-17' # Policy Document
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeTags
+                  - eks:DescribeCluster
+                  - autoscaling:CompleteLifecycleAction
+                Resource: '*'
+      RoleName: !Sub "${AWS::StackName}-FuncRole"
+      
+      
+      
+  # Func2:
+  #   Condition: NotUseExistingLambdaFuncRole
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: !Ref FunctionName
+  #     Description: github.com/pahud/eks-lambda-drainer
+  #     Handler: main
+  #     CodeUri: ./func.d
+  #     Runtime: provided
+  #     Layers:
+  #       # - !Sub "arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:layer-eks-kubectl-layer-stack:2"
+  #       - !FindInMap
+  #         - LayerArn
+  #         - !Ref 'AWS::Region'
+  #         - kubectl
+  #     MemorySize: 512
+  #     Environment:
+  #       Variables:
+  #         cluster_name: !Ref ClusterName
+  #     Policies:
+  #       - AWSLambdaBasicExecutionRole # Managed Policy
+  #       - Version: '2012-10-17' # Policy Document
+  #         Statement:
+  #           - Effect: Allow
+  #             Action:
+  #               - ec2:DescribeInstances
+  #               - ec2:DescribeTags
+  #               - eks:DescribeCluster
+  #               - autoscaling:CompleteLifecycleAction
+  #             Resource: '*'
+  #     Timeout: 50
+  #     Events:
+  #       CWE1:
+  #         Type: CloudWatchEvent
+  #         Properties:
+  #           Pattern:
+  #             source:
+  #               - aws.ec2
+  #             detail-type: 
+  #               - "EC2 Spot Instance Interruption Warning"
+  #       CWE2:
+  #         Type: CloudWatchEvent
+  #         Properties:
+  #           Pattern:
+  #             source:
+  #               - aws.autoscaling
+  #             detail-type: 
+  #               -  "EC2 Instance-terminate Lifecycle Action"          
+                
+
+
 Outputs:
-  Func:
+  FuncArn:
     Description: "Lambda function Arn"
     Value: !GetAtt Func.Arn
 
   FuncIamRole:
     Description: "Lambda function IAM role Arn"
-    Value: !GetAtt FuncRole.Arn
-
+    Value: 
+          !If
+          - UseExistingLambdaFuncRole
+          - !Ref FunctionRoleArn
+          - !GetAtt MyLambdaRole.Arn  
+    

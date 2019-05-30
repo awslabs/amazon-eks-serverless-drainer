@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: eks-lambda-drainer
+    Description: "Lambda handler for node draining on Amazon EKS spot instances"
+    Author: Pahud Hsieh
+    SpdxLicenseId: Apache-2.0
+    LicenseUrl: LICENSE
+    ReadmeUrl: README.md
+    Labels: ['eks','lambda','drain','taint', 'autoscaling', 'lifecyclehook']
+    HomePageUrl: https://github.com/pahud/eks-lambda-drainer
+    SemanticVersion: 1.0.1-beta
+    SourceCodeUrl: https://github.com/pahud/eks-lambda-drainer
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: default
+  FunctionName:
+    Type: String
+    Default: defaultFunc
+  FunctionRoleArn:
+    Type: String
+    Default: ""
+
+Transform: AWS::Serverless-2016-10-31
+Description: eks-lambda-drainer Func
+Resources:
+  Func:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        # serverless app from all regoins should be able to import this ApplicationId from 'us-east-1' across accounts.
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer
+        SemanticVersion: 1.0.1-beta
+      Parameters:
+        ClusterName: !Ref ClusterName
+        FunctionName: !Ref FunctionName
+        FunctionRoleArn: !Ref FunctionRoleArn
+
+Outputs:
+  Func:
+    Description: "Lambda function Arn"
+    Value: !GetAtt Func.Outputs.FuncArn
+  FuncIamRole:
+    Description: "Lambda function IAM role Arn"
+    Value: !GetAtt Func.Outputs.FuncIamRole
+

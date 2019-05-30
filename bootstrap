@@ -7,21 +7,6 @@ set -euo pipefail
 
 export PATH=$PATH:/opt/awscli:/opt/kubectl
 
-if [ -z ${cluster_name:-} ]; then
-    echo "missing cluster_name in lambda environment variables - using 'default' as the cluster_name"
-fi
-
-cluster_name=${cluster_name-default}
-
-
-update_kubeconfig(){
-    aws eks update-kubeconfig --name "$1"  --kubeconfig /tmp/kubeconfig
-}
-
-update_kubeconfig "$cluster_name" && \
-# for container-reuse we save cluster_name in /tmp/.env.config
-echo "cluster_name=${cluster_name}" > /tmp/.env.config || echo "update_kubeconfig failed"
-
 
 # Processing
 while true
@@ -40,5 +25,5 @@ do
   echo "=========[/RESPONSE]======="
 
   # Send the response
-  curl -X POST "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/response"  -d "$RESPONSE"
+  curl -s -X POST "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/response"  -d "$RESPONSE"
 done

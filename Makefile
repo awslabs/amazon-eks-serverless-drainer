@@ -1,8 +1,19 @@
+SECRETS_FILE ?= secrets.mk
+ifeq ($(shell test -e $(SECRETS_FILE) && echo -n yes),yes)
+    include $(SECRETS_FILE)
+endif
+CUSTOM_FILE ?= custom.mk
+ifeq ($(shell test -e $(CUSTOM_FILE) && echo -n yes),yes)
+    include $(CUSTOM_FILE)
+endif
+ROOT ?= $(shell pwd)
+AWS_ACCOUNT_ID := $(shell aws sts get-caller-identity --query 'Account' --output text)
 # modify this as your own S3 temp bucket. Make sure your locak IAM user have read/write access
 S3BUCKET	?= pahud-tmp-ap-northeast-1
 LAMBDA_REGION ?= ap-northeast-1
-LAMBDA_FUNC_NAME ?= eks-lambda-drainer
-STACKNAME	?= eks-lambda-drainer
+STACKNAME	?= eks-lambda-drainer2
+LAMBDA_FUNC_NAME ?= $(STACKNAME)
+
 # Your Amazon EKS cluster name
 CLUSTER_NAME ?= eksdemo
 
@@ -24,6 +35,20 @@ sam-package:
 	-e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
 	pahud/aws-sam-cli:latest sam package --template-file sam.yaml --s3-bucket $(S3BUCKET) --output-template-file packaged.yaml
 
+.PHONY: sam-sar-package
+sam-sar-package:
+	@docker run -ti \
+	-v $(PWD):/home/samcli/workdir \
+	-v $(HOME)/.aws:/home/samcli/.aws \
+	-w /home/samcli/workdir \
+	-e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
+	pahud/aws-sam-cli:latest sam package --template-file sam-sar.yaml --s3-bucket $(S3BUCKET) --output-template-file packaged.yaml
+
+
+.PHONY: sam-package-from-sar
+sam-package-from-sar: sam-sar-package
+
+
 .PHONY: sam-publish
 sam-publish:
 	@docker run -ti \
@@ -37,19 +62,21 @@ sam-publish:
 .PHONY: sam-deploy	
 sam-deploy:
 	@aws --region $(LAMBDA_REGION)  cloudformation deploy \
-	--parameter-overrides FunctionName=$(LAMBDA_FUNC_NAME) ClusterName=$(CLUSTER_NAME) \
-	--template-file ./packaged.yaml --stack-name "$(LAMBDA_FUNC_NAME)" --capabilities CAPABILITY_IAM
+	--parameter-overrides FunctionName=$(LAMBDA_FUNC_NAME) ClusterName=$(CLUSTER_NAME) FunctionRoleArn=$(FunctionRoleArn) \
+	--template-file ./packaged.yaml --stack-name "$(LAMBDA_FUNC_NAME)" --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM
 	# print the cloudformation stack outputs
 	@aws --region $(LAMBDA_REGION) cloudformation describe-stacks --stack-name "$(LAMBDA_FUNC_NAME)" --query 'Stacks[0].Outputs'
 
 .PHONY: sam-logs-tail
 sam-logs-tail:
-	@docker run -ti \
-	-v $(PWD):/home/samcli/workdir \
-	-v $(HOME)/.aws:/home/samcli/.aws \
-	-w /home/samcli/workdir \
-	-e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
-	pahud/aws-sam-cli:latest sam logs --name $(LAMBDA_FUNC_NAME) --tail
+	sam logs --name $(LAMBDA_FUNC_NAME) --tail
+	# @docker run -ti \
+	# -v $(PWD):/home/samcli/workdir \
+	# -v $(HOME)/.aws:/home/samcli/.aws \
+	# -w /home/samcli/workdir \
+	# -e AWS_DEFAULT_REGION=$(LAMBDA_REGION) \
+	# -e AWS_REGION=$(LAMBDA_REGION) \
+	# pahud/aws-sam-cli:latest sam logs --name eks-lambda-drainer --tail --debug
 
 .PHONY: sam-destroy
 sam-destroy:

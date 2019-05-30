@@ -3,13 +3,14 @@
 # include the common-used shortcuts
 source libs.sh
 
-# load .env.config cache and read previously used cluster_name
-[ -f /tmp/.env.config ] && cat /tmp/.env.config && source /tmp/.env.config
-
 echo $1
 
 taintNode(){
     kubectl taint nodes "$1" SpotTerminating=true:NoExecute 
+}
+
+drainNode(){
+    kubectl drain  "$1" --ignore-daemonsets --delete-local-data
 }
 
 getNodeNameByInstanceId(){
@@ -21,6 +22,10 @@ getClusterNameFromTags(){
     echo ${x##*/}
 }
 
+update_kubeconfig(){
+    aws eks update-kubeconfig --name "$1"  --kubeconfig /tmp/kubeconfig
+}
+
 
 detailType=$(echo $1 | jq -r '.["detail-type"] | select(type == "string")')
 instanceId=$(echo $1 | jq -r '.detail.EC2InstanceId | select(type == "string")')
@@ -29,20 +34,22 @@ lifecycleActionToken=$(echo $1 | jq -r '.detail.LifecycleActionToken | select(ty
 lifecycleHookName=$(echo $1 | jq -r '.detail.LifecycleHookName | select(type == "string")')
 lifecycleTransition=$(echo $1 | jq -r '.detail.LifecycleTransition | select(type == "string")')
 
+# always get the cluster_name from EC2 Tag
 input_cluster_name=$(getClusterNameFromTags $instanceId)
 
-if [ -n "${input_cluster_name}" ]  && [ "${input_cluster_name}" != "${cluster_name}" ]; then
-    echo "got new cluster_name=$input_cluster_name - update kubeconfig now..."
-    update_kubeconfig "$input_cluster_name" || exit 1
-    cluster_name="$input_cluster_name"
-    echo "writing new cluster_name=${cluster_name} to /tmp/.env.config"
-    echo "cluster_name=${cluster_name}" > /tmp/.env.config
-fi
+# always update kubeconfig
+update_kubeconfig "$cluster_name" 
 
-# taint the node immediately
-echo "[NFO] taintNode now"
+# drain the node immediately
+echo "[INFO] start the node draining now"
 nodeName=$(getNodeNameByInstanceId $instanceId)
-taintNode "$nodeName"
+if [ "${drain_type}" == "taint" ]; then
+    echo "[INFO] start taint ${nodeName}"
+    taintNode "$nodeName"
+else
+    echo "[INFO] start drain ${nodeName}"
+    drainNode "$nodeName"
+fi
 echo "[INFO] sleep a while before we callback the hook so the pods have enough time for resheduling"
 sleep 10
 echo "[INFO] OK. let's kubectl descirbe node/${nodeName}"

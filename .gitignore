@@ -3,9 +3,6 @@ main.zip
 vendor/
 sam-packaged.yaml
 .DS_Store
-<<<<<<< HEAD
-func.d/
-=======
-./func.d
->>>>>>> d3051023afc09735b20ab550b23fb8471788ab93
 packaged.yaml
+custom.mk
+func.d/
