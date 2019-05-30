@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/badge/Available-serverless%20app%20repository-blue.svg)](https://serverlessrepo.aws.amazon.com/#/applications/arn:aws:serverlessrepo:us-east-1:903779448426:applications~eks-lambda-drainer)
 
-**eks-lambda-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **eks-lambda-drainer**  will perform the taint-based eviction on the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
+**eks-lambda-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **eks-lambda-drainer**  will drain the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
 
 ## Implementations
 
@@ -15,12 +15,34 @@ it's very easy to implement this with a few lines of bash script in Lambda([twee
 So we will stick to `bash` implementation in this branch. We believe this will eliminate the complexity to help people develop similar projects in the future.
 
 
-# Prepare your Layer
 
-Follow the [instructions](https://github.com/pahud/lambda-layer-kubectl) to build and publish your `lambda-layer-kubectl` Lambda Layer.
+# Option 1: Building from SAR(Serverless App Repository)
+
+The most simplest way to build this stack is creating from SAR:
+
+Edit `Makefile` and then
+
+```bash
+$ make sam-package-from-sar sam-deploy
+```
+
+This will provision the whole `eks-lambda-layer` stack from SAR including the provided `aws-lambda-layer-kubectl`. 
+
+
+
+# Option 2: Building from scratch
+
+If you want to build it from scratch including the `aws-lambda-layer-kubectl`
+
+
+## Prepare your Layer
+
+Follow the [instructions](https://github.com/aws-samples/aws-lambda-layer-kubectl) to build and publish your `aws-lambda-layer-kubectl` Lambda Layer.
 Copy the layer ARN(e.g. `arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:layer-eks-kubectl-layer-stack:2`)
 
-# Edit the sam.yaml
+
+
+## Edit the sam.yaml
 
 Set the value of `Layers` to the layer arn in the previous step.
 
@@ -29,6 +51,8 @@ Set the value of `Layers` to the layer arn in the previous step.
         - !Sub "arn:aws:lambda:ap-northeast-1:${AWS::AccountId}:layer:layer-eks-kubectl-layer-stack:2"
 
 ```
+
+
 
 # update Makefile
 
@@ -45,7 +69,8 @@ LAMBDA_REGION ?= ap-northeast-1
 ```
 
 
-# package and deploy with `SAM`
+
+## package and deploy with `SAM`
 
 ```
 $ make func-prep sam-package sam-deploy
@@ -79,7 +104,11 @@ aws --region ap-northeast-1 cloudformation describe-stacks --stack-name "eks-lam
 
 
 
+
+
 # Add Lambda Role into ConfigMap
+
+`eks-lambda-drainer` will run with provided lambda role or with exactly the role arn you specified in the parameter. Make sure you have added the role into `aws-auth` ConfigMap.
 
 Read Amazon EKS [document](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html) about how to add an IAM Role to the `aws-auth` ConfigMap. 
 
@@ -118,7 +147,7 @@ The first `rolearn` is your Amazon EKS NodeInstanceRole and the 2nd `rolearn` wo
 
 You may decrease the `desired capacity` of your autoscaling group for Amazon EKS nodegroup. Behind the scene, on 
 instance termination from auoscaling group, the node will first enter the **Terminating:Wait** state and after a pre-defined graceful period of time(default: 10 seconds), 
-**eks-lambda-drainer** will be invoked through the CloudWatch Event and perform `kubectl taint nodes` on the node and immediately 
+**eks-lambda-drainer** will be invoked through the CloudWatch Event and perform `kubectl drain` on the node and immediately 
 put **CompleteLifecycleAction** back to the hook and the autoscaling group then move on to the 
 **Terminaing:Proceed** phase to execute the last termination process. The Pods in the terminating node will be rescheduled to other node(s) before the termination 
 Your service will have almost zero impact.
@@ -132,7 +161,30 @@ Live tail the log
 $ make sam-logs-tail
 ```
 
-![](images/07.png)
+![](images/11.png)
+
+
+
+![](images/12.png)
+
+
+
+# kubectl drain or kubectl taint
+
+By default, `eks-lambda-drainer` will `kubectl drain` the node, however, if you specify Lambda environment variable `drain_type=taint` then it will `kubectl taint` the node.([details](https://github.com/pahud/eks-lambda-drainer/blob/c36e3aab1590177719e1eb389f077829ec238504/main.sh#L46-L52))
+
+
+
+# cluster name auto discovery
+
+You don't have to specify the Amazon EKS cluster name, by default `eks-lambda-drainer` will determine the EC2 Tag of the terminating node:
+
+```
+kubernetes.io/cluster/{cluster_name} = owned
+```
+
+For example, `kubernetes.io/cluster/eksdemo = owned` will make the `cluster_name=eksdemo`.
+
 
 
 # clean up
