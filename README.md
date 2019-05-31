@@ -16,15 +16,36 @@ So we will stick to `bash` implementation in this branch. We believe this will e
 
 
 
-# Option 1: Building from SAR(Serverless App Repository)
+# Option 1: Deployt from SAR(Serverless App Repository)
 
-The most simplest way to build this stack is creating from SAR:
+The most simple way to build this stack is creating from SAR:
 
 Edit `Makefile` and then
 
 ```bash
 $ make sam-package-from-sar sam-deploy
 ```
+Or just click the button to deploy
+
+
+|        Region        |                    Click and Deploy                     | 
+| :----------------: | :----------------------------------------------------------: | 
+|  **us-east-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-east-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **us-east-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-east-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **us-west-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-west-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **us-west-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-west-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **ap-northeast-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/ap-northeast-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **ap-northeast-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/ap-northeast-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **ap-southeast-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/ap-southeast-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **ap-southeast-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/ap-southeast-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **eu-central-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-central-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **eu-west-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-west-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **eu-west-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-west-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **eu-west-3** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-west-3/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **eu-north-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-north-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+|  **sa-east-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/sa-east-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
+
+https://deploy.serverlessrepo.app/ap-northeast-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer
 
 This will provision the whole `eks-lambda-layer` stack from SAR including the provided `aws-lambda-layer-kubectl`. 
 
