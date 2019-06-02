@@ -4,6 +4,10 @@
 
 **eks-lambda-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **eks-lambda-drainer**  will drain the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
 
+![](images/eks-lambda-drainer.png)
+
+
+
 ## Implementations
 
 - `golang` implementation([branch](https://github.com/pahud/eks-lambda-drainer/tree/golang))
@@ -28,8 +32,8 @@ $ make sam-package-from-sar sam-deploy
 Or just click the button to deploy
 
 
-|        Region        |                    Click and Deploy                     | 
-| :----------------: | :----------------------------------------------------------: | 
+|        Region        |                    Click and Deploy                     |
+| :----------------: | :----------------------------------------------------------: |
 |  **us-east-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-east-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
 |  **us-east-2** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-east-2/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
 |  **us-west-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/us-west-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
