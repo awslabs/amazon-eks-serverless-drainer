@@ -1,4 +1,5 @@
-# amazon-eks-serverless-drainer
+## Amazon Eks Serverless Drainer
+
 Amazon EKS node drainer with AWS Lambda.
 
 [![](https://img.shields.io/badge/Available-serverless%20app%20repository-blue.svg)](https://serverlessrepo.aws.amazon.com/#/applications/arn:aws:serverlessrepo:us-east-1:903779448426:applications~eks-lambda-drainer)
