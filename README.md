@@ -1,4 +1,5 @@
-# eks-lambda-drainer
+# amazon-eks-serverless-drainer
+Amazon EKS node drainer with AWS Lambda.
 
 [![](https://img.shields.io/badge/Available-serverless%20app%20repository-blue.svg)](https://serverlessrepo.aws.amazon.com/#/applications/arn:aws:serverlessrepo:us-east-1:903779448426:applications~eks-lambda-drainer)
 
@@ -218,3 +219,8 @@ For example, `kubernetes.io/cluster/eksdemo = owned` will make the `cluster_name
 $ make sam-destroy
 ```
 (this will destroy the cloudformation stack and all resources in it)
+
+
+## License Summary
+
+This sample code is made available under the MIT-0 license. See the LICENSE file.
