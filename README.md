@@ -1,10 +1,10 @@
-## Amazon Eks Serverless Drainer
+## Amazon EKS Serverless Drainer
 
 Amazon EKS node drainer with AWS Lambda.
 
 [![](https://img.shields.io/badge/Available-serverless%20app%20repository-blue.svg)](https://serverlessrepo.aws.amazon.com/#/applications/arn:aws:serverlessrepo:us-east-1:903779448426:applications~eks-lambda-drainer)
 
-**eks-lambda-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **eks-lambda-drainer**  will drain the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
+**amazon-eks-serverless-drainer** is an Amazon EKS node drainer with AWS Lambda. If you provision spot instances or spotfleet in your Amazon EKS nodegroup, you can listen to the spot termination signal from **CloudWatch Events** 120 seconds in prior to the final termination process. By configuring this Lambda function as the CloudWatch Event target, **amazon-eks-serverless-drainer**  will drain the terminating node and all the pods without relative toleration will be evicted and rescheduled to another node - your workload will get very minimal impact on the spot instance termination.
 
 ![](images/eks-lambda-drainer.png)
 
@@ -16,7 +16,7 @@ Amazon EKS node drainer with AWS Lambda.
 - `bash` implementation(current master branch)
 
 Previously this project has a native `golang` implementation with `client-go`(see `golang` [branch](https://github.com/pahud/eks-lambda-drainer/tree/golang)).
-However, as AWS [announced](https://amzn.to/2SUlcv3) `Lambda layer` and `Lambda custom runtime`, thanks to `pahud/lambda-layer-kubectl`([link](https://github.com/pahud/lambda-layer-kubectl)) project,
+However, as AWS [announced](https://amzn.to/2SUlcv3) `Lambda layer` and `Lambda custom runtime`, thanks to the [aws-samples/aws-lambda-layer-kubectl](https://github.com/aws-samples/aws-lambda-layer-kubectl) project,
 it's very easy to implement this with a few lines of bash script in Lambda([tweet](https://twitter.com/pahudnet/status/1095369690556162049)) whilst the code size could be reduced from `11MB` to just `2.4KB`.
 So we will stick to `bash` implementation in this branch. We believe this will eliminate the complexity to help people develop similar projects in the future.
 
@@ -51,9 +51,9 @@ Or just click the button to deploy
 |  **eu-north-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/eu-north-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
 |  **sa-east-1** | [![](https://img.shields.io/badge/SAR-Deploy%20Now-yellow.svg)](https://deploy.serverlessrepo.app/sa-east-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer) |
 
-https://deploy.serverlessrepo.app/ap-northeast-1/?app=arn:aws:serverlessrepo:us-east-1:903779448426:applications/eks-lambda-drainer
 
-This will provision the whole `eks-lambda-layer` stack from SAR including the provided `aws-lambda-layer-kubectl`. 
+
+This will provision the whole **amazon-eks-serverless-drainer** stack from SAR including  `aws-lambda-layer-kubectl` lambda layer out-of-the-box. The benefit is you don't have to build the layer yourself.
 
 
 
